@@ -18,7 +18,7 @@ function getBookList() {
     }).then(result => {
         // console.log(result.data.data);
         const bookList = result.data.data
-        console.log(bookList);
+        // console.log(bookList);
 
         // 2、渲染数据
         // 遍历数组映射标签
@@ -36,7 +36,7 @@ function getBookList() {
         </tr>
         `
         }).join('')
-        console.log(htmlStr);
+        // console.log(htmlStr);
         document.querySelector('.list').innerHTML = htmlStr
     })
 
@@ -126,7 +126,7 @@ document.querySelector('.list').addEventListener('click', e => {
         // 获取图书id => 回显到弹框
         const theId = e.target.parentNode.dataset.id
         // console.log(theId);
-        // 回显表单数据
+        // 4.2 回显表单数据
         // 发送请求，获取本行id对应的图书数据
         axios({
             url: `http://hmajax.itheima.net/api/books/${theId}`
@@ -149,12 +149,42 @@ document.querySelector('.list').addEventListener('click', e => {
         })
     }
 })
-// 点击修改按钮 -> 获取当前编辑图书数据 -> 隐藏弹框
+// 4.3 点击修改按钮 -> 获取当前编辑图书数据 -> 隐藏弹框
 document.querySelector('.edit-btn').addEventListener('click', () => {
+    // 获取当前编辑后的 弹框图书数据
+    // 获取表单
+    const editForm = document.querySelector('.edit-form')
+    // 获取修改后表单数据
+    // const bookObj = new serialize(editForm, { hash: true, empty: true })
+    // const bookObj = new serialize(editForm, { hash: true, empty: true })
+    const { id, author, bookname, publisher } = new serialize(editForm, { hash: true, empty: true })
+    // 隐藏存id的表单，防止用户修改
+    // <input type="hidden" class="id" name="id" value="311244">
+    // console.log(bookObj);
+    // const theId = bookObj.id
+    // console.log(theId);
 
+    // 提交到服务器
+    axios({
+        url: `http://hmajax.itheima.net/api/books/${id}`,
+        method: 'PUT',
+        data: {
+            // ...bookObj,
+            bookname: bookname,
+            author: author,
+            publisher: publisher,
+            creator
+        }
+    }).then(result => {
+        // console.log(result);
+        // 修改成功
+        console.log(result.data.data);
+        // 渲染表格 网页加载运行，重新获取并渲染图书列表
+        getBookList()
+        // 隐藏弹框
+        editMadal.hide()
+    })
 
-    // 隐藏弹框
-    editMadal.hide()
 })
 
 
