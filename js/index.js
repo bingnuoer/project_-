@@ -96,8 +96,8 @@ document.querySelector('.list').addEventListener('click', e => {
         // 3.2 调用删除接口
         axios({
             // url路径传参
-            url:`http://hmajax.itheima.net/api/books/${theId}`,
-            method:'DELETE',
+            url: `http://hmajax.itheima.net/api/books/${theId}`,
+            method: 'DELETE',
         }).then(result => {
             // 删除图书成功
             console.log(result);
@@ -117,17 +117,42 @@ document.querySelector('.list').addEventListener('click', e => {
 const editDemo = document.querySelector('.edit-modal')
 const editMadal = new bootstrap.Modal(editDemo)
 // 获取编辑按钮
-document.querySelector('.list').addEventListener('click',e => {
-    if(e.target.classList.contains = 'edit'){
+document.querySelector('.list').addEventListener('click', e => {
+    if (e.target.classList.contains = 'edit') {
         // console.log('编辑');
         // 显示弹框
         editMadal.show()
-        // 回显表单数据
 
+        // 获取图书id => 回显到弹框
+        const theId = e.target.parentNode.dataset.id
+        // console.log(theId);
+        // 回显表单数据
+        // 发送请求，获取本行id对应的图书数据
+        axios({
+            url: `http://hmajax.itheima.net/api/books/${theId}`
+        }).then(result => {
+            // console.log(result.data.data);
+            const bookObj = result.data.data
+            // 法一：弹框表单回显 -页面获取文本框元素设置值
+            // document.querySelector('.edit-modal .bookname').value=bookObj.bookname
+            // document.querySelector('.edit-modal .author' ).value = bookObj.author
+
+            // 法二：图书对象数据转换成数组，循环回显
+            const keys = Object.keys(bookObj)
+            console.log(keys); // ['id', 'bookname', 'author', 'publisher']
+            // key是数组中每个元素,[key]是数组中每个元素的值
+            keys.forEach(key => {
+                // 遍历属性，通过属性和类名的关系，快速把数据回显
+                // 循环把类名设置到获取文本框元素 并 赋值
+                document.querySelector(`.edit-modal .${key}`).value = bookObj[key]
+            })
+        })
     }
 })
 // 点击修改按钮 -> 获取当前编辑图书数据 -> 隐藏弹框
-document.querySelector('.edit-btn').addEventListener('click',() => {
+document.querySelector('.edit-btn').addEventListener('click', () => {
+
+
     // 隐藏弹框
     editMadal.hide()
 })
